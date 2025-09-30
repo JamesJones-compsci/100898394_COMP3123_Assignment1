@@ -45,4 +45,40 @@ router.post('/signup', async(req, res) =>{
     }
 });
 
+
+// POST /api/users/login
+// Authenticate user and return success if valid
+// Public access
+
+router.post('/login', async(req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if(!user){
+            return res.status(400).json({ message: 'Invalid entry. Please try again (email not found)'});
+        }
+
+        // Compare password with the hashed version saved in the database
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch){
+            return res.status(400).json({ message: 'Invalid entry. Please try again (email not found) '});
+        }
+
+        // If the user is successful
+        res.status(200).json({
+            message: 'Login is successful',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+            },
+        });
+      } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server error');
+      }
+});
+
 module.exports = router;
