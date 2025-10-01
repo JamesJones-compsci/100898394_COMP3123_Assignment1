@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const connectDB = require("./config/db"); // Import DB connection function
 const userRoutes = require('./routes/userRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
+const errorHandler = require('./middleware/errorHandler');
 const dotenv = require("dotenv");
 
 // 2. Initialize express app
@@ -31,6 +32,9 @@ app.get("/", (req, res) => {
 // 8. Routes
 app.use('/api/users', userRoutes);
 app.use('/api/employees', employeeRoutes)
+
+app.use(errorHandler);  // Error Handler must be the last 'Route'
+
 
 // 9. Start server
 app.listen(PORT, () => {
