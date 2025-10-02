@@ -6,8 +6,7 @@ const validate = require('../middleware/validate');
 
 const router = express.Router();
 
-
-// Signup Route
+// POST /api/v1/user/signup
 router.post(
   '/signup',
   [
@@ -20,17 +19,14 @@ router.post(
     const { username, email, password } = req.body;
 
     try {
-      // Check if user exists
       let existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: 'A user with this email already exists' });
       }
 
-      // Hash password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      // Save new user
       const newUser = new User({
         username,
         email,
@@ -40,12 +36,8 @@ router.post(
       await newUser.save();
 
       res.status(201).json({
-        message: 'User registered successfully',
-        user: {
-          id: newUser._id,
-          username: newUser.username,
-          email: newUser.email,
-        },
+        message: 'User created successfully.',
+        user: newUser,   // 👈 now returns with `user_id`
       });
     } catch (err) {
       console.error(err.message);
@@ -54,8 +46,7 @@ router.post(
   }
 );
 
-
-// Login Route
+// POST /api/v1/user/login
 router.post(
   '/login',
   [
@@ -67,26 +58,19 @@ router.post(
     const { email, password } = req.body;
 
     try {
-      // Find user
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ message: 'Invalid credentials (email not found)' });
+        return res.status(400).json({ message: 'Invalid credentials' });
       }
 
-      // Check password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials (wrong password)' });
+        return res.status(400).json({ message: 'Invalid credentials' });
       }
 
-      // Success
       res.status(200).json({
-        message: 'Login successful',
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-        },
+        message: 'Login successful.',
+        user: user,   // 👈 automatically shows `user_id`
       });
     } catch (err) {
       console.error(err.message);

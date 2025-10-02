@@ -30,8 +30,8 @@ app.get("/", (req, res) => {
 });
 
 // 8. Routes
-app.use('/api/users', userRoutes);
-app.use('/api/employees', employeeRoutes)
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/emp/employees', employeeRoutes);
 
 app.use(errorHandler);  // Error Handler must be the last 'Route'
 

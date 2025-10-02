@@ -5,10 +5,7 @@ const validate = require('../middleware/validate');
 
 const router = express.Router();
 
-
-// POST /api/employees
-// Create a new employee
-// Public access
+// POST /api/v1/emp/employees
 router.post(
   '/',
   [
@@ -27,8 +24,12 @@ router.post(
       }
 
       const newEmployee = new Employee(req.body);
-      const savedEmployee = await newEmployee.save();
-      res.status(201).json(savedEmployee);
+      await newEmployee.save();
+
+      res.status(201).json({
+        message: 'Employee created successfully.',
+        employee: newEmployee,   // 👈 now returns with `employee_id`
+      });
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
@@ -36,24 +37,18 @@ router.post(
   }
 );
 
-
-// GET /api/employees
-// Get all employees
-// Public access
+// GET /api/v1/emp/employees
 router.get('/', async (req, res) => {
   try {
     const employees = await Employee.find();
-    res.status(200).json(employees);
+    res.status(200).json(employees); // 👈 all have employee_id
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
 
-
-// GET /api/employees/:id
-// Get single employee by ID
-// Public access
+// GET /api/v1/emp/employees/:id
 router.get(
   '/:id',
   [param('id').isMongoId().withMessage('Invalid employee ID')],
@@ -64,7 +59,7 @@ router.get(
       if (!employee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
-      res.status(200).json(employee);
+      res.status(200).json(employee); // 👈 will show employee_id
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
@@ -72,10 +67,7 @@ router.get(
   }
 );
 
-
-// PUT /api/employees/:id
-// Update employee by ID
-// Public access
+// PUT /api/v1/emp/employees/:id
 router.put(
   '/:id',
   [
@@ -94,7 +86,7 @@ router.put(
       if (!updatedEmployee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
-      res.json(updatedEmployee);
+      res.status(200).json(updatedEmployee); // 👈 employee_id included
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
@@ -102,10 +94,7 @@ router.put(
   }
 );
 
-
-// DELETE /api/employees/:id
-// Delete employee by ID
-// Public access
+// DELETE /api/v1/emp/employees/:id
 router.delete(
   '/:id',
   [param('id').isMongoId().withMessage('Invalid employee ID')],
@@ -116,7 +105,7 @@ router.delete(
       if (!deletedEmployee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
-      res.json({ message: 'Employee deleted successfully' });
+      res.status(204).send();
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');

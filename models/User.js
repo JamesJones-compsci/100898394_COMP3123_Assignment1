@@ -1,23 +1,36 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Define User.schema
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     username: {
-        type: String,
-        required: true,
-        unique: true,   // usernames must be unique
+      type: String,
+      required: true,
+      unique: true, // usernames must be unique
     },
     email: {
-        type: String,
-        required: true,
-        unique: true, // emails must be unique
-        match: [/.+@.+\..+/, 'Please enter a valid email'],  // basic email validation
+      type: String,
+      required: true,
+      unique: true, // emails must be unique
+      match: [/.+@.+\..+/, "Please enter a valid email"],
     },
     password: {
-        type: String,
-        required: true,
-        minlength: 6,   // enforce stronger passwords
+      type: String,
+      required: true,
+      minlength: 6, // enforce stronger passwords
     },
-}, { timestamps: true });  // adds createdAt & updatedAt fields automatically
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('User', UserSchema);
+// Transform output so `_id` becomes `user_id`
+userSchema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.user_id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+module.exports = User;
