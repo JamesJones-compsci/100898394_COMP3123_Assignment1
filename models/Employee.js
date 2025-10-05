@@ -16,6 +16,8 @@ const employeeSchema = new mongoose.Schema(
       required: true,
       min: [0, "The salary cannot be negative"],
     },
+    date_of_joining: { type: Date }, 
+    department: { type: String },    
   },
   { timestamps: true }
 );

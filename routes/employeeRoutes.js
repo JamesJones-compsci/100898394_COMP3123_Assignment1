@@ -28,7 +28,7 @@ router.post(
 
       res.status(201).json({
         message: 'Employee created successfully.',
-        employee: newEmployee,   // 👈 now returns with `employee_id`
+        employee_id: newEmployee._id.toString(), // only return ID
       });
     } catch (err) {
       console.error(err.message);
@@ -41,7 +41,17 @@ router.post(
 router.get('/', async (req, res) => {
   try {
     const employees = await Employee.find();
-    res.status(200).json(employees); // 👈 all have employee_id
+    const cleaned = employees.map(emp => ({
+      employee_id: emp._id.toString(),          // changed from emp.employee_id
+      first_name: emp.first_name,
+      last_name: emp.last_name,
+      email: emp.email,
+      position: emp.position,
+      salary: emp.salary,
+      date_of_joining: emp.date_of_joining || null, // fallback if undefined
+      department: emp.department || null         // fallback if undefined
+    }));
+    res.status(200).json(cleaned);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -59,7 +69,19 @@ router.get(
       if (!employee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
-      res.status(200).json(employee); // 👈 will show employee_id
+
+      const result = {
+        employee_id: employee._id.toString(),       // changed from employee.employee_id
+        first_name: employee.first_name,
+        last_name: employee.last_name,
+        email: employee.email,
+        position: employee.position,
+        salary: employee.salary,
+        date_of_joining: employee.date_of_joining || null,
+        department: employee.department || null
+      };
+
+      res.status(200).json(result);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
@@ -83,10 +105,13 @@ router.put(
         req.body,
         { new: true, runValidators: true }
       );
+
       if (!updatedEmployee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
-      res.status(200).json(updatedEmployee); // 👈 employee_id included
+
+      // Only return message
+      res.status(200).json({ message: 'Employee details updated successfully.' });
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
@@ -94,23 +119,23 @@ router.put(
   }
 );
 
-// DELETE /api/v1/emp/employees/:id
-router.delete(
-  '/:id',
-  [param('id').isMongoId().withMessage('Invalid employee ID')],
-  validate,
-  async (req, res) => {
-    try {
-      const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
-      if (!deletedEmployee) {
-        return res.status(404).json({ message: 'Employee not found' });
-      }
-      res.status(204).send();
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
-    }
+// DELETE /api/v1/emp/employees?eid=xxx
+router.delete('/', async (req, res) => {
+  const { eid } = req.query;
+  if (!eid) {
+    return res.status(400).json({ message: 'Employee ID (eid) is required' });
   }
-);
+
+  try {
+    const deletedEmployee = await Employee.findByIdAndDelete(eid);
+    if (!deletedEmployee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(204).send();
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
 
 module.exports = router;

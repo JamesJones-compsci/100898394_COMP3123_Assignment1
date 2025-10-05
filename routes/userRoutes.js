@@ -37,7 +37,7 @@ router.post(
 
       res.status(201).json({
         message: 'User created successfully.',
-        user: newUser,   // 👈 now returns with `user_id`
+        user_id: newUser._id.toString(), // only return the ID
       });
     } catch (err) {
       console.error(err.message);
@@ -68,9 +68,10 @@ router.post(
         return res.status(400).json({ message: 'Invalid credentials' });
       }
 
+      // Only return the success message
       res.status(200).json({
         message: 'Login successful.',
-        user: user,   // 👈 automatically shows `user_id`
+        // jwt_token: "Optional implementation" // optional
       });
     } catch (err) {
       console.error(err.message);
