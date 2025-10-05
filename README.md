@@ -7,16 +7,6 @@ The project demonstrates API endpoints, database integration, and Docker contain
 
 ---
 
-## Sample User Credentials
-These credentials can be used by the marker to log in and test the application:
-
-- **Email/Username:** testuser@example.com  
-- **Password:** Test1234  
-
-> Use these credentials in the login form or API requests to authenticate.
-
----
-
 ## How to Run the Project
 
 ### Prerequisites
