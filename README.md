@@ -2,7 +2,7 @@
 
 ## Project Description
 This project is my COMP3123 Assignment 1 submission.  
-It is a [brief description of your project, e.g., "Node.js + Express REST API with MongoDB database for managing users and data"].  
+  
 The project demonstrates API endpoints, database integration, and Docker container usage.
 
 ---
@@ -35,7 +35,6 @@ DB_NAME=assignment1_db
 DB_HOST=localhost
 PORT=3000
 
-```markdown
 ## Comments / Notes
 - Ensure the MongoDB container is running before starting the app.  
 - Ports 3000 (app) and 8081 (Mongo Express) must be available. If already in use, change them accordingly.  
